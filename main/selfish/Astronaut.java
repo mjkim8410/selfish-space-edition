@@ -479,8 +479,7 @@ public class Astronaut implements Serializable {
      * @return astronaut
      */
     public String toString() {
-        boolean gameNotStarted = !game.hasStarted();
-        if (isAlive() && gameNotStarted) {
+        if (isAlive()) {
             return name;
         } else {
             return (name + " (is dead)");

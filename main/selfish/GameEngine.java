@@ -341,15 +341,6 @@ public class GameEngine implements Serializable {
     }
 
     /**
-     * checks if the game has started
-     * 
-     * @return boolean
-     */
-    public boolean hasStarted() {
-        return this.hasStarted;
-    }
-
-    /**
      * starts the turn
      */
     public void startTurn() {

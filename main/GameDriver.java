@@ -38,6 +38,7 @@ public class GameDriver {
         String spaceCardsPath = "/home/minjun/github-repository/selfish-space-edition/io/SpaceCards.txt";
 
         System.out.print("Press any key to start the game: ");
+        scanner.nextLine();
         System.out.print("Would you like to load previously saved game? [Y]es or [N]o: ");
 
         if (scanner.nextLine().equalsIgnoreCase("y")) {
@@ -69,7 +70,7 @@ public class GameDriver {
             System.out.println("Their names are:");
             for (Astronaut player : gameEngine.getAllPlayers()) {
                 String playerName = player.toString();
-                System.out.println(playerName);
+                System.out.println(playerName.substring(0, playerName.length() - 10));
             }
 
             numberOfPlayers = gameEngine.getAllPlayers().size();
