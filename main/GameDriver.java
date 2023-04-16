@@ -33,8 +33,8 @@ public class GameDriver {
         Scanner scanner = new Scanner(System.in);
 
         // Instansiating the game engine.
-        String actionCardsPath = "/home/minjun/git-repository/comp16412-coursework-2__p02428mk/io/ActionCards.txt";
-        String spaceCardsPath = "/home/minjun/git-repository/comp16412-coursework-2__p02428mk/io/SpaceCards.txt";
+        String actionCardsPath = "/home/minjun/github-repository/selfish-space-edition/io/ActionCards.txt";
+        String spaceCardsPath = "/home/minjun/github-repository/selfish-space-edition/io/SpaceCards.txt";
 
         System.out.print("Press any key to start the game: ");
         System.out.print("Would you like to load previously saved game? [Y]es or [N]o: ");
