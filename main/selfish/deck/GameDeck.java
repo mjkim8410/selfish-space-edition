@@ -50,10 +50,12 @@ public class GameDeck extends Deck {
      */
     public GameDeck(String path) throws GameException {
         add(GameDeck.loadCards(path));
-        for (int i=0; i<10; i++) {
+        int numberOfOxygenTwo = 10;
+        int numberOfOxygenOne = 38;
+        for (int i=0; i<numberOfOxygenTwo; i++) {
             add(new Oxygen(2));
         }
-        for (int i=0; i<38; i++) {
+        for (int i=0; i<numberOfOxygenOne; i++) {
             add(new Oxygen(1));
         }
     }
@@ -65,10 +67,10 @@ public class GameDeck extends Deck {
      * @return drawn oxygen
      */
     public Oxygen drawOxygen(int value) {
-        Oxygen oxy = new Oxygen(value);
+        Oxygen sampleOxygen = new Oxygen(value);
         for (Card element : this.getCards()) {
             if (element instanceof Oxygen) {
-                if (oxy.compareTo(element) == 0) {
+                if (sampleOxygen.compareTo(element) == 0) {
                     this.remove(element);
                     return ((Oxygen) element);
                 }
@@ -90,11 +92,11 @@ public class GameDeck extends Deck {
             throw new IllegalArgumentException();
             }
 
-        Oxygen ox1 = this.drawOxygen(1);
-        Oxygen ox2 = this.drawOxygen(1);
-        Oxygen[] oxyPair = {ox1, ox2};
+        Oxygen firstOxygenOne = this.drawOxygen(1);
+        Oxygen secondOxygenOne = this.drawOxygen(1);
+        Oxygen[] oxygenPair = {firstOxygenOne, secondOxygenOne};
         
         this.add(dbl);
-        return oxyPair;
+        return oxygenPair;
     }
 }

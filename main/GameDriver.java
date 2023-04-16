@@ -33,19 +33,23 @@ public class GameDriver {
         Scanner scanner = new Scanner(System.in);
 
         // Instansiating the game engine.
-        String gPath = "/home/minjun/git-repository/comp16412-coursework-2__p02428mk/io/ActionCards.txt";
-        String sPath = "/home/minjun/git-repository/comp16412-coursework-2__p02428mk/io/SpaceCards.txt";
+        String actionCardsPath = "/home/minjun/git-repository/comp16412-coursework-2__p02428mk/io/ActionCards.txt";
+        String spaceCardsPath = "/home/minjun/git-repository/comp16412-coursework-2__p02428mk/io/SpaceCards.txt";
 
+        System.out.print("Press any key to start the game: ");
         System.out.print("Would you like to load previously saved game? [Y]es or [N]o: ");
+
         if (scanner.nextLine().equalsIgnoreCase("y")) {
             GameEngine.loadState("gameDeckSave.ser");
         } 
         else {
-            GameEngine gameEngine = new selfish.GameEngine(16412, gPath, sPath);
+            GameEngine gameEngine = new selfish.GameEngine(16412, actionCardsPath, spaceCardsPath);
 
             // This loop generates from 2 to 5 players.
-            for (int i=0; i<9; i++) {
-                if (gameEngine.getAllPlayers().size() >= 2) {
+            int numberOfPlayers;
+            for (int i=0; i<5; i++) {
+                numberOfPlayers = gameEngine.getAllPlayers().size();
+                if (numberOfPlayers >= 2) {
                     System.out.print("Add another player? [Y]es or [N]o: ");
                     if (!(scanner.nextLine().equalsIgnoreCase("y"))) {break;}
                     else {;}
@@ -53,17 +57,22 @@ public class GameDriver {
                 System.out.print("Enter player name: ");
                 String name = scanner.nextLine(); 
                 gameEngine.addPlayer(name);
-                System.out.println(gameEngine.getAllPlayers().size() + " player(s) added.");
+                numberOfPlayers = gameEngine.getAllPlayers().size();
+                System.out.println(numberOfPlayers + " player(s) added.");
             }
 
-            String gameOpening = "After a dazzling (but doomed) space mission, the astronauts are floating in space and their Oxygen supplies are running low.\nOnly the first back to the ship will survive!";
+            String gameOpening = "After a dazzling (but doomed) space mission, the astronauts are floating in space and " +
+                                 "their Oxygen supplies are running low.\nOnly the first back to the ship will survive!";
+
             System.out.println(gameOpening);
             System.out.println("Their names are:");
-            for (Astronaut element : gameEngine.getAllPlayers()) {
-                System.out.println(element.toString());
+            for (Astronaut player : gameEngine.getAllPlayers()) {
+                String playerName = player.toString();
+                System.out.println(playerName);
             }
             
-            System.out.println("Total of " + gameEngine.getAllPlayers().size() + " players added.");
+            numberOfPlayers = gameEngine.getAllPlayers().size();
+            System.out.println("Total of " + numberOfPlayers + " players added.");
 
             gameEngine.startGame();
 
@@ -71,7 +80,6 @@ public class GameDriver {
                 gameEngine.startTurn();
                 gameEngine.endTurn();
             }
-            
         }
         scanner.close();
     }

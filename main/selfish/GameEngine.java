@@ -84,12 +84,12 @@ public class GameEngine implements Serializable {
         for (Astronaut astronaut : getAllPlayers()) {
             if (astronaut.hasWon() && astronaut.isAlive()) {return true;}
         }
-        int i = 0;
+        int numberOfPlayersAlive = 0;
         for (Astronaut astronaut : getAllPlayers()) {
             if (!astronaut.isAlive()) {
-                i++;
+                numberOfPlayersAlive++;
             }
-        if (getFullPlayerCount() == i) {return true;}
+        if (getFullPlayerCount() == numberOfPlayersAlive) {return true;}
         }
         return false;
     }
@@ -100,13 +100,16 @@ public class GameEngine implements Serializable {
      * @return players
      */
     public List<Astronaut> getAllPlayers() {
-        List<Astronaut> all = new ArrayList<Astronaut>(); 
-        if ((!(currentPlayer == null)) && !(corpses.contains(currentPlayer))) {
-            all.add(currentPlayer);
+        List<Astronaut> allPlayers = new ArrayList<Astronaut>(); 
+        boolean currentPlayerExists = !(currentPlayer == null);
+        boolean currentPlayerIsNotCorpse = !corpses.contains(currentPlayer);
+
+        if (currentPlayerExists && currentPlayerIsNotCorpse) {
+            allPlayers.add(currentPlayer);
         }
-        all.addAll(activePlayers);
-        all.addAll(corpses);
-        return all;
+        allPlayers.addAll(activePlayers);
+        allPlayers.addAll(corpses);
+        return allPlayers;
     }
 
 
@@ -124,7 +127,8 @@ public class GameEngine implements Serializable {
      * @return number of players
      */
     public int getFullPlayerCount() {
-        return getAllPlayers().size();
+        int fullPlayerCount = getAllPlayers().size();
+        return fullPlayerCount;
     }
 
 
@@ -201,8 +205,8 @@ public class GameEngine implements Serializable {
         System.out.println("Merging Decks");
         System.out.println("Size of deck1 is " + deck1.size());
         System.out.println("Size of deck2 is " + deck2.size());
-        int size = deck2.size();
-        for (int i=0; i < size; i++) {
+        int sizeOfDeck2 = deck2.size();
+        for (int i=0; i < sizeOfDeck2; i++) {
             deck1.add(deck2.draw());
         }
         deck1.shuffle(random);
@@ -273,36 +277,40 @@ public class GameEngine implements Serializable {
         if (dbl.getValue() == 1) {
             throw new IllegalArgumentException();
         }
-        int i = 0;
+        int numberOfOxygenOne = 0;
         for (Card element : gameDeck.getCards()) {
-            if (element instanceof Oxygen) {
-                if (((Oxygen)element).getValue() == 1) {i++;}
+            if (element instanceof Oxygen && ((Oxygen)element).getValue() == 1) {
+                numberOfOxygenOne++;}
             }
-        }
-        if (i > 1) {
+        if (numberOfOxygenOne > 1) {
             gameDeck.add(dbl);
-            return new Oxygen[] {gameDeck.drawOxygen(1), gameDeck.drawOxygen(1)};
+            Oxygen[] pairOfOxygenOne = {gameDeck.drawOxygen(1), gameDeck.drawOxygen(1)};
+            return pairOfOxygenOne;
         }
-        else if (i == 1) {
+        else if (numberOfOxygenOne == 1) {
             for (Card card : gameDiscard.getCards()) {
-                if (card instanceof Oxygen) {
-                    if (((Oxygen)card).getValue() == 1) {i++;}
+                boolean cardIsOxygenOne = ((Oxygen)card).getValue() == 1;
+                if (card instanceof Oxygen && cardIsOxygenOne) {
+                    numberOfOxygenOne++;
                 }
             }
-            if (i > 1) {
+            if (numberOfOxygenOne > 1) {
                 gameDeck.add(dbl);
-                return new Oxygen[] {gameDeck.drawOxygen(1), gameDiscard.drawOxygen(1)};
+                Oxygen[] pairOfOxygenOne = {gameDeck.drawOxygen(1), gameDeck.drawOxygen(1)};
+                return pairOfOxygenOne;
             }
         }
         else {
             for (Card card : gameDiscard.getCards()) {
+                boolean cardIsOxygenOne = ((Oxygen)card).getValue() == 1;
                 if (card instanceof Oxygen) {
-                    if (((Oxygen)card).getValue() == 1) {i++;}
+                    if (cardIsOxygenOne) {numberOfOxygenOne++;}
                 }
             }
-            if (i > 1) {
+            if (numberOfOxygenOne > 1) {
                 gameDeck.add(dbl);
-                return new Oxygen[] {gameDiscard.drawOxygen(1), gameDiscard.drawOxygen(1)};
+                Oxygen[] pairOfOxygenOne = {gameDeck.drawOxygen(1), gameDeck.drawOxygen(1)};
+                return pairOfOxygenOne;
             }
         }
         throw new IllegalStateException();
@@ -313,24 +321,20 @@ public class GameEngine implements Serializable {
      * starts the game
      */
     public void startGame() {
-        if (this.getFullPlayerCount() == 1) {
+        boolean wrongNumberOfPlayers = this.getFullPlayerCount() == 1 || this.getFullPlayerCount() == 6;
+        if (wrongNumberOfPlayers || hasStarted) {
             throw new IllegalStateException();
         }
-        if (this.getFullPlayerCount() == 6) {
-            throw new IllegalStateException();
-        }
-        if (hasStarted) {
-            System.out.println("The game has started");
-            throw new IllegalStateException();
-        }
+        int numberOfOxygenOneToDeal = 4;
+        int numberOfActionCardsToDeal = 4;
         for (Astronaut element : activePlayers) {
             element.addToHand(this.gameDeck.drawOxygen(2));
-            for (int i=0; i<4; i++) {
+            for (int i=0; i<numberOfOxygenOneToDeal; i++) {
                 element.addToHand(this.gameDeck.drawOxygen(1));
             }
         }
 
-        for (int i=0; i<4; i++) {
+        for (int i=0; i<numberOfActionCardsToDeal; i++) {
             for (Astronaut element : activePlayers) {
                 element.addToHand(this.gameDeck.draw());
             }    
@@ -340,15 +344,20 @@ public class GameEngine implements Serializable {
 
 
     /**
+     * checks if the game has started
+     * @return boolean
+     */
+    public boolean hasStarted() {
+        return this.hasStarted;
+    }
+
+
+    /**
      * starts the turn
      */
     public void startTurn() {
         Scanner scanner = new Scanner(System.in);
-        if (!hasStarted || gameOver()) {
-            scanner.close();
-            throw new IllegalStateException();
-        }
-        if (!(currentPlayer==null)) {
+        if (!hasStarted || gameOver() || !(currentPlayer==null)) {
             scanner.close();
             throw new IllegalStateException();
         }
@@ -384,7 +393,8 @@ public class GameEngine implements Serializable {
             }
             System.out.println(playerName + "'s turn has ended");
         }
-        return getFullPlayerCount() - corpses.size();
+        int numberOfPlayersAlive = getFullPlayerCount() - corpses.size();
+        return numberOfPlayersAlive;
     }
 
 
@@ -394,19 +404,24 @@ public class GameEngine implements Serializable {
      * @return space card drawn
      */
     public Card travel(Astronaut traveller) {
-        if (traveller.oxygenRemaining() < 2) {
+        boolean notEnoughOxygenToTravell = traveller.oxygenRemaining() < 2;
+        if (notEnoughOxygenToTravell) {
             throw new IllegalStateException();
         }
         traveller.breathe();
         traveller.breathe();
-        Card card = spaceDeck.draw();
-        if (card.toString().equalsIgnoreCase("GRAVITATIONAL ANOMALY")) {
-            spaceDiscard.add(card);
+        Card drawnSpaceCard = spaceDeck.draw();
+
+        boolean drawnSpaceCardIsGravitationalAnomaly = 
+            drawnSpaceCard.toString().equalsIgnoreCase("GRAVITATIONAL ANOMALY");
+            
+        if (drawnSpaceCardIsGravitationalAnomaly) {
+            spaceDiscard.add(drawnSpaceCard);
         }
         else {
-            traveller.addToTrack(card);
+            traveller.addToTrack(drawnSpaceCard);
         }
-        return card;
+        return drawnSpaceCard;
     }
 }
 

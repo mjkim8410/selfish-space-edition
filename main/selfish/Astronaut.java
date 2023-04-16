@@ -55,26 +55,27 @@ public class Astronaut implements Serializable {
      * @return oxygen remaining
      */
     public int breathe() {
-        if (!isAlive()) {
+        boolean playerIsDead = !this.isAlive();
+        if (playerIsDead) {
             throw new IllegalStateException();
         }
-        int i=0;
-        Oxygen oxy = new Oxygen(1);
+        int numberOfOxygenOneFound = 0;
+        Oxygen sampleOxygenOne = new Oxygen(1);
         for (Oxygen element : oxygens) {
             if (element instanceof Oxygen) {
-                if (element.compareTo(oxy) == 0) {
-                    i++;
+                if (element.compareTo(sampleOxygenOne) == 0) {
+                    numberOfOxygenOneFound++;
                 }
             }
         }
 
-        if (i==0) {
+        if (numberOfOxygenOneFound == 0) {
             for (Oxygen element : oxygens) {
                 if (element.getValue() == 2) {
-                    Oxygen[] oxyPair = game.splitOxygen(element);
+                    Oxygen[] oxygenOnePair = game.splitOxygen(element);
                     oxygens.remove(element);
-                    addToHand(oxyPair[0]);
-                    addToHand(oxyPair[1]);
+                    addToHand(oxygenOnePair[0]);
+                    addToHand(oxygenOnePair[1]);
                     break;
                 }
             }
@@ -88,14 +89,14 @@ public class Astronaut implements Serializable {
             }
         }
 
-        int j = 0;
+        int totalOxygenLeft = 0;
         for (Oxygen element: oxygens) {
-            j += element.getValue();
+            totalOxygenLeft += element.getValue();
         }
         if (oxygenRemaining() == 0) {
             game.killPlayer(this);
         }
-        return j;
+        return totalOxygenLeft;
     }
 
 
@@ -104,7 +105,9 @@ public class Astronaut implements Serializable {
      * @return distance
      */
     public int distanceFromShip() {
-        return 6 - getTrack().size();
+        int startingDistanceFromShip = 6;
+        int distanceTrvelled = this.getTrack().size();
+        return startingDistanceFromShip - distanceTrvelled;
     }
 
 
@@ -126,16 +129,15 @@ public class Astronaut implements Serializable {
      */
     public String getActionsStr(boolean enumerated, boolean excludeShields) {
 
-        String str = "";
+        String actionCardsListed = "";
         ArrayList<String> actions = new ArrayList<String>();
         actions.add("Hack suit");
         actions.add("Hole in suit");
         actions.add("Laser blast");
         actions.add("Oxygen siphon");
         actions.add("Rocket booster");
-        if (!excludeShields) {
-            actions.add("Shield");
-        }
+        if (!excludeShields) 
+        {actions.add("Shield");}
         actions.add("Tether");
         actions.add("Tractor beam");
 
@@ -153,7 +155,7 @@ public class Astronaut implements Serializable {
             int i = 0;
             for (String element : actions) {
                 if (hasCard(element) != 0) {
-                    str = str + letters.get(i) + element + ", ";
+                    actionCardsListed = actionCardsListed + letters.get(i) + element + ", ";
                     i++;
                 }
             }
@@ -161,15 +163,17 @@ public class Astronaut implements Serializable {
         else {
             for (String element : actions) {
                 if (hasCard(element) == 1) {
-                    str = str + element + ", ";
+                    actionCardsListed = actionCardsListed + element + ", ";
                 }
                 else if (hasCard(element) > 1) {
-                    str = str + Integer.toString(hasCard(element)) + "x " + element + ", ";
+                    actionCardsListed = actionCardsListed + Integer.toString(hasCard(element)) + "x " + element + ", ";
                 }
             }
         }
-        if (str.length() == 0) {return str;}
-        else {return str.substring(0, str.length()-2);}
+        boolean actionCardsListedIsEmpty = actionCardsListed.length() == 0;
+        String truncatedActionCardsListed = actionCardsListed.substring(0, actionCardsListed.length()-2);
+        if (actionCardsListedIsEmpty) {return actionCardsListed;}
+        else {return truncatedActionCardsListed;}
     }
 
 
@@ -191,25 +195,31 @@ public class Astronaut implements Serializable {
      * @return cards
      */
     public String getHandStr() {
-        String str = "";
-        if (hasCard("Oxygen(2)") > 1) {
-            str = str + Integer.toString(hasCard("Oxygen(2)")) + "x " + "Oxygen(2), ";
+        String oxygensInHandListed = "";
+        int numberOfOxygenTwoInHand = hasCard("Oxygen(2)");
+        int numberOfOxygenOneInHand = hasCard("Oxygen(1)");
+        String numberOfOxygenTwoInHandStr = Integer.toString(numberOfOxygenTwoInHand);
+        String numberOfOxygenOneInHandStr = Integer.toString(numberOfOxygenOneInHand);
+
+        if (numberOfOxygenTwoInHand > 1) {
+            oxygensInHandListed = oxygensInHandListed + numberOfOxygenTwoInHandStr + "x " + "Oxygen(2), ";
         }
-        else if (hasCard("Oxygen(2)") == 1) {
-            str = str + "Oxygen(2), ";
+        else if (numberOfOxygenTwoInHand == 1) {
+            oxygensInHandListed = oxygensInHandListed + "Oxygen(2), ";
         }
-        if (hasCard("Oxygen(1)") > 1) {
-            str = str + Integer.toString(hasCard("Oxygen(1)")) + "x " + "Oxygen(1), ";
+        if (numberOfOxygenOneInHand > 1) {
+            oxygensInHandListed = oxygensInHandListed + numberOfOxygenOneInHandStr + "x " + "Oxygen(1), ";
         }
-        else if (hasCard("Oxygen(1)") == 1) {
-            str = str + "Oxygen(1), ";
+        else if (numberOfOxygenOneInHand == 1) {
+            oxygensInHandListed = oxygensInHandListed + "Oxygen(1), ";
         }
-        if (str.length() != 0) {
-            str = str.substring(0, str.length()-2);
-            str = str + "; ";
+        if (oxygensInHandListed.length() != 0) {
+            oxygensInHandListed = oxygensInHandListed.substring(0, oxygensInHandListed.length()-2);
+            oxygensInHandListed = oxygensInHandListed + "; ";
         }
-        str = str + getActionsStr(false, false);
-        return str;
+        String actionCardsListed = getActionsStr(false, false);
+        String cardsInHandListed = oxygensInHandListed + actionCardsListed;
+        return cardsInHandListed;
     }
 
 
@@ -230,10 +240,10 @@ public class Astronaut implements Serializable {
         if (card == null) {
             throw new IllegalArgumentException();
         }
-        boolean cardFound = false;
+        boolean cardNotFound = true;
         for (Card element : getHand()) {
             if (element == card) {
-                cardFound = true;
+                cardNotFound = false;
                 if (card instanceof Oxygen) {
                     oxygens.remove(card);
                     if (oxygenRemaining() == 0) {
@@ -245,7 +255,7 @@ public class Astronaut implements Serializable {
                 }
             }
         }
-        if (!cardFound) {throw new IllegalArgumentException();}
+        if (cardNotFound) {throw new IllegalArgumentException();}
     }
 
 
@@ -298,13 +308,13 @@ public class Astronaut implements Serializable {
      * @return number of cards
      */
     public int hasCard(String card) {
-        int i = 0;
+        int numberOfCardsInHand = 0;
         for (Card element : getHand()) {
             if (element.toString().equals(card)) {
-                i++;
+                numberOfCardsInHand++;
             }
         }
-        return i;
+        return numberOfCardsInHand;
     }
 
 
@@ -313,7 +323,9 @@ public class Astronaut implements Serializable {
      * @return boolean
      */
     public boolean hasMeltedEyeballs() {
-        return peekAtTrack().toString().equals(SpaceDeck.SOLAR_FLARE);
+        String spaceCardBehind = peekAtTrack().toString();
+        String solarFlare = SpaceDeck.SOLAR_FLARE;
+        return spaceCardBehind.equals(solarFlare);
     }
 
 
@@ -322,17 +334,19 @@ public class Astronaut implements Serializable {
      * @return boolean
      */
     public boolean hasWon() {
-        Boolean win = (distanceFromShip() == 0 && isAlive());
-        return win;
+        boolean isAtShip = distanceFromShip() == 0;
+        Boolean hasWon = (isAtShip && isAlive());
+        return hasWon;
     }
 
 
     /**
-     * returns true of the astronaut is alive
-     * @return oxygen remaining
+     * returns true if the astronaut is alive
+     * @return oxygenRemaining() > 0
      */
     public boolean isAlive() {
-        return (oxygenRemaining() > 0);
+        boolean isAlive = oxygenRemaining() > 0;
+        return (isAlive);
     }
 
 
@@ -341,10 +355,11 @@ public class Astronaut implements Serializable {
      * @return the space card that was directly behind
      */
     public Card laserBlast() {
-        if (this.track.size() > 0) {
-            Card ob = ((List<Card>) track).get(track.size()-1);
-            track.remove(ob);
-            return ob;
+        boolean isNotAtStartingPosition = this.track.size() > 0;
+        if (isNotAtStartingPosition) {
+            Card spaceCardBehind = ((List<Card>) track).get(track.size()-1);
+            track.remove(spaceCardBehind);
+            return spaceCardBehind;
         }
         else {throw new IllegalArgumentException();}
     }
@@ -355,11 +370,11 @@ public class Astronaut implements Serializable {
      * @return number of oxygen
      */
     public int oxygenRemaining() {
-        int oxy = 0;
+        int oxygenRemaining = 0;
         for (Oxygen element : oxygens) {
-            oxy += element.getValue();
+            oxygenRemaining += element.getValue();
         } 
-        return oxy;
+        return oxygenRemaining;
     }
 
 
@@ -368,15 +383,14 @@ public class Astronaut implements Serializable {
      * @return space card
      */
     public Card peekAtTrack() {
-        if (getTrack().isEmpty()) {
-            return null;
-        }
-        else if (this.distanceFromShip() < 0) {
+        boolean trackIsEmpty = getTrack().isEmpty();
+        boolean isAtStartingPosition = this.distanceFromShip() < 0;
+        if (trackIsEmpty || isAtStartingPosition) {
             return null;
         }
         else {
-            Card peek = ((ArrayList<Card>)track).get(getTrack().size()-1);
-        return peek;
+            Card spaceCardBehind = ((ArrayList<Card>)track).get(getTrack().size()-1);
+        return spaceCardBehind;
         }
     }
 
@@ -387,7 +401,8 @@ public class Astronaut implements Serializable {
      */
     public Oxygen siphon() {
         for (Oxygen element : oxygens ) {
-            if (element.getValue() == 1) {
+            boolean elementIsOxygenOne = element.getValue() == 1;
+            if (elementIsOxygenOne) {
                 oxygens.remove(element);
                 if (oxygenRemaining() == 0) {
                     game.killPlayer(this);
@@ -396,12 +411,13 @@ public class Astronaut implements Serializable {
             }
         }
         for (Oxygen element : oxygens ) {
-            if (element.getValue() == 2) {
-                Card[] oxyPair = game.splitOxygen(element);
+            boolean elementIsOxygenTwo = element.getValue() == 2;
+            if (elementIsOxygenTwo) {
+                Card[] pairOfOxygenOne = game.splitOxygen(element);
                 oxygens.remove(element);
-                addToHand(oxyPair[1]);
-                Card ox = oxyPair[0];
-                return (Oxygen)ox;
+                addToHand(pairOfOxygenOne[1]);
+                Card oxygenOne = pairOfOxygenOne[0];
+                return (Oxygen)oxygenOne;
             }
         }
         return null;
@@ -444,9 +460,9 @@ public class Astronaut implements Serializable {
      */
     public void swapTrack(Astronaut swapee) {
         Collection<Card> swapeeTrack = swapee.getTrack();
-        Collection<Card> thisTrack = this.getTrack();
+        Collection<Card> myTrack = this.getTrack();
         this.track = swapeeTrack;
-        swapee.track = thisTrack;
+        swapee.track = myTrack;
     }
 
 
@@ -455,7 +471,8 @@ public class Astronaut implements Serializable {
      * @return  astronaut
      */
     public String toString() {
-        if (isAlive()) {
+        boolean gameNotStarted = !game.hasStarted();
+        if (isAlive() && gameNotStarted) {
             return name;
         }
         else {return (name + " (is dead)");}

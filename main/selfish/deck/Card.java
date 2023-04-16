@@ -49,25 +49,25 @@ public class Card implements Serializable, Comparable<Card> {
     @Override public int compareTo(Card a) {
         if (this instanceof Oxygen && a instanceof Oxygen) {
 
-            Oxygen first = (Oxygen) this;
+            Oxygen firstOxygen = (Oxygen) this;
 
-            Oxygen second = (Oxygen) a;
+            Oxygen secondOxygen = (Oxygen) a;
 
-            if (first.getValue() == second.getValue()) {
+            if (firstOxygen.getValue() == secondOxygen.getValue()) {
                 return 0;
             } 
-            else if (first.getValue() < second.getValue()) {
+            else if (firstOxygen.getValue() < secondOxygen.getValue()) {
                 return -1;
             }
             else {return 1;}
         }
         else
             {
-                String first = this.toString();
+                String firstCardName = this.toString();
 
-                String second = a.toString();
+                String secondCardName = a.toString();
 
-                return first.compareTo(second);
+                return firstCardName.compareTo(secondCardName);
             }
     }   
 }
