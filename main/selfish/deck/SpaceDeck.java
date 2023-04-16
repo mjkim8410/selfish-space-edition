@@ -1,10 +1,11 @@
 package selfish.deck;
+
 import java.util.*;
 import selfish.GameException;
 
-
 /**
  * Class SpaceDeck
+ * 
  * @author Minjun Kim
  * @version 1.0
  */
@@ -32,7 +33,6 @@ public class SpaceDeck extends Deck {
     /** Wormhole */
     public static final String WORMHOLE = "Wormhole";
 
-
     /**
      * creates an empty SpaceDeck
      */
@@ -40,9 +40,9 @@ public class SpaceDeck extends Deck {
         add(new ArrayList<Card>());
     }
 
-
     /**
      * creates a fully loaded SpaceDeck
+     * 
      * @param path path of space cards
      * @throws GameException file not found
      */
@@ -50,4 +50,3 @@ public class SpaceDeck extends Deck {
         add(SpaceDeck.loadCards(path));
     }
 }
-

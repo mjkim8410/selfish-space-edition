@@ -1,11 +1,12 @@
 package selfish;
+
 import java.io.*;
 import java.util.*;
 import selfish.deck.*;
 
-
 /**
  * Class GameEngine
+ * 
  * @author Minjun Kim
  * @version 1.0
  */
@@ -21,22 +22,21 @@ public class GameEngine implements Serializable {
     private SpaceDeck spaceDeck = new SpaceDeck();
     private SpaceDeck spaceDiscard = new SpaceDeck();
 
-    
     /**
      * an empty constructor
      */
-    private GameEngine() {}
-
+    private GameEngine() {
+    }
 
     /**
      * GameEngine constructor
-     * @param seed seed for the random object
-     * @param gameDeck path to the action cards text file
+     * 
+     * @param seed      seed for the random object
+     * @param gameDeck  path to the action cards text file
      * @param spaceDeck path to the space cards text file
      * @throws GameException file not found
      */
     public GameEngine(long seed, String gameDeck, String spaceDeck) throws GameException {
-        
 
         random.setSeed(seed);
 
@@ -56,9 +56,9 @@ public class GameEngine implements Serializable {
         this.spaceDeck.shuffle(random);
     }
 
-
     /**
      * adds a player to the game
+     * 
      * @param player player name
      * @return number of players added
      */
@@ -66,13 +66,13 @@ public class GameEngine implements Serializable {
         if (hasStarted && getFullPlayerCount() == 5) {
             throw new IllegalStateException();
         }
-        ((LinkedList<Astronaut>)activePlayers).add(new Astronaut(player, this));
+        ((LinkedList<Astronaut>) activePlayers).add(new Astronaut(player, this));
         return activePlayers.size();
     }
 
-
     /**
      * returns true if game is over
+     * 
      * @return boolean
      */
     public boolean gameOver() {
@@ -86,20 +86,20 @@ public class GameEngine implements Serializable {
             if (!astronaut.isAlive()) {
                 numberOfPlayersAlive++;
             }
-        if (getFullPlayerCount() == numberOfPlayersAlive) {
-            return true;
-        }
+            if (getFullPlayerCount() == numberOfPlayersAlive) {
+                return true;
+            }
         }
         return false;
     }
 
-
     /**
      * returns all the players in game
+     * 
      * @return players
      */
     public List<Astronaut> getAllPlayers() {
-        List<Astronaut> allPlayers = new ArrayList<Astronaut>(); 
+        List<Astronaut> allPlayers = new ArrayList<Astronaut>();
         boolean currentPlayerExists = !(currentPlayer == null);
         boolean currentPlayerIsNotCorpse = !corpses.contains(currentPlayer);
 
@@ -111,18 +111,18 @@ public class GameEngine implements Serializable {
         return allPlayers;
     }
 
-
     /**
      * returns the current player
+     * 
      * @return player
      */
     public Astronaut getCurrentPlayer() {
         return currentPlayer;
     }
 
-
     /**
      * returns the number of players in game
+     * 
      * @return number of players
      */
     public int getFullPlayerCount() {
@@ -130,45 +130,45 @@ public class GameEngine implements Serializable {
         return fullPlayerCount;
     }
 
-
     /**
      * returns the game deck
+     * 
      * @return game deck
      */
     public GameDeck getGameDeck() {
         return this.gameDeck;
     }
 
-
     /**
      * returns the game discard deck
+     * 
      * @return game discard deck
      */
     public GameDeck getGameDiscard() {
         return this.gameDiscard;
     }
 
-
     /**
      * returns the space deck
+     * 
      * @return space deck
      */
     public SpaceDeck getSpaceDeck() {
         return this.spaceDeck;
     }
 
-
     /**
      * returns the space discard deck
+     * 
      * @return space discard deck
      */
     public SpaceDeck getSpaceDiscard() {
         return this.spaceDiscard;
     }
 
-
     /**
      * returns the winner of the game
+     * 
      * @return winner
      */
     public Astronaut getWinner() {
@@ -179,13 +179,15 @@ public class GameEngine implements Serializable {
         return null;
     }
 
-
     /**
      * kills the passed player
+     * 
      * @param corpse player to kill
      */
     public void killPlayer(Astronaut corpse) {
-        for (int i=0; i < corpse.oxygenRemaining(); i++) {corpse.breathe();}
+        for (int i = 0; i < corpse.oxygenRemaining(); i++) {
+            corpse.breathe();
+        }
         corpse.getActions().clear();
         corpses.add(corpse);
         activePlayers.remove(corpse);
@@ -194,9 +196,9 @@ public class GameEngine implements Serializable {
         }
     }
 
-
     /**
      * refills the first deck with the cards from the second deck
+     * 
      * @param deck1 deck to refill
      * @param deck2 deck to empty
      */
@@ -205,16 +207,16 @@ public class GameEngine implements Serializable {
         System.out.println("Size of deck1 is " + deck1.size());
         System.out.println("Size of deck2 is " + deck2.size());
         int sizeOfDeck2 = deck2.size();
-        for (int i=0; i < sizeOfDeck2; i++) {
+        for (int i = 0; i < sizeOfDeck2; i++) {
             deck1.add(deck2.draw());
         }
         deck1.shuffle(random);
         System.out.println("Merging done");
     }
 
-
     /**
      * saves game
+     * 
      * @param path name of the save file
      * @throws GameException file not found
      */
@@ -231,18 +233,18 @@ public class GameEngine implements Serializable {
             out = new ObjectOutputStream(fileOut);
             out.writeObject(this);
             out.close();
-            fileOut.close(); 
+            fileOut.close();
         } catch (IOException e) {
             throw new GameException("IOException", e);
         }
     }
 
-
     /**
      * loads the saved game
+     * 
      * @param path name of the save file
      * @return game
-     * @throws GameException file not found
+     * @throws GameException          file not found
      * @throws ClassNotFoundException IOException
      */
     public static GameEngine loadState(String path) throws GameException, ClassNotFoundException {
@@ -265,10 +267,10 @@ public class GameEngine implements Serializable {
         }
         return gameEngine;
     }
-    
 
     /**
      * takes one Oxygen(2) and returns a pair of Oxygen(1)
+     * 
      * @param dbl Oxygen(2) to take
      * @return pair of Oxygen(1)
      */
@@ -278,43 +280,41 @@ public class GameEngine implements Serializable {
         }
         int numberOfOxygenOne = 0;
         for (Card element : gameDeck.getCards()) {
-            if (element instanceof Oxygen && ((Oxygen)element).getValue() == 1) {
-                numberOfOxygenOne++;}
+            if (element instanceof Oxygen && ((Oxygen) element).getValue() == 1) {
+                numberOfOxygenOne++;
             }
+        }
         if (numberOfOxygenOne > 1) {
             gameDeck.add(dbl);
-            Oxygen[] pairOfOxygenOne = {gameDeck.drawOxygen(1), gameDeck.drawOxygen(1)};
+            Oxygen[] pairOfOxygenOne = { gameDeck.drawOxygen(1), gameDeck.drawOxygen(1) };
             return pairOfOxygenOne;
-        }
-        else if (numberOfOxygenOne == 1) {
+        } else if (numberOfOxygenOne == 1) {
             for (Card card : gameDiscard.getCards()) {
-                boolean cardIsOxygenOne = ((Oxygen)card).getValue() == 1;
+                boolean cardIsOxygenOne = ((Oxygen) card).getValue() == 1;
                 if (card instanceof Oxygen && cardIsOxygenOne) {
                     numberOfOxygenOne++;
                 }
             }
             if (numberOfOxygenOne > 1) {
                 gameDeck.add(dbl);
-                Oxygen[] pairOfOxygenOne = {gameDeck.drawOxygen(1), gameDeck.drawOxygen(1)};
+                Oxygen[] pairOfOxygenOne = { gameDeck.drawOxygen(1), gameDeck.drawOxygen(1) };
                 return pairOfOxygenOne;
             }
-        }
-        else {
+        } else {
             for (Card card : gameDiscard.getCards()) {
-                boolean cardIsOxygenOne = ((Oxygen)card).getValue() == 1;
+                boolean cardIsOxygenOne = ((Oxygen) card).getValue() == 1;
                 if (card instanceof Oxygen && cardIsOxygenOne) {
                     numberOfOxygenOne++;
                 }
             }
             if (numberOfOxygenOne > 1) {
                 gameDeck.add(dbl);
-                Oxygen[] pairOfOxygenOne = {gameDeck.drawOxygen(1), gameDeck.drawOxygen(1)};
+                Oxygen[] pairOfOxygenOne = { gameDeck.drawOxygen(1), gameDeck.drawOxygen(1) };
                 return pairOfOxygenOne;
             }
         }
         throw new IllegalStateException();
     }
-
 
     /**
      * starts the game
@@ -328,38 +328,37 @@ public class GameEngine implements Serializable {
         int numberOfActionCardsToDeal = 4;
         for (Astronaut element : activePlayers) {
             element.addToHand(this.gameDeck.drawOxygen(2));
-            for (int i=0; i<numberOfOxygenOneToDeal; i++) {
+            for (int i = 0; i < numberOfOxygenOneToDeal; i++) {
                 element.addToHand(this.gameDeck.drawOxygen(1));
             }
         }
-        for (int i=0; i<numberOfActionCardsToDeal; i++) {
+        for (int i = 0; i < numberOfActionCardsToDeal; i++) {
             for (Astronaut element : activePlayers) {
                 element.addToHand(this.gameDeck.draw());
-            }    
+            }
         }
         hasStarted = true;
     }
 
-
     /**
      * checks if the game has started
+     * 
      * @return boolean
      */
     public boolean hasStarted() {
         return this.hasStarted;
     }
 
-
     /**
      * starts the turn
      */
     public void startTurn() {
         Scanner scanner = new Scanner(System.in);
-        if (!hasStarted || gameOver() || !(currentPlayer==null)) {
+        if (!hasStarted || gameOver() || !(currentPlayer == null)) {
             scanner.close();
             throw new IllegalStateException();
         }
-        currentPlayer = ((LinkedList<Astronaut>)activePlayers).poll();
+        currentPlayer = ((LinkedList<Astronaut>) activePlayers).poll();
         String playerName = currentPlayer.toString();
         System.out.println(playerName + "'s turn has started");
         if (gameDeck.size() == 0) {
@@ -374,9 +373,9 @@ public class GameEngine implements Serializable {
         scanner.close();
     }
 
-
     /**
      * ends the turn
+     * 
      * @return number of players alive
      */
     public int endTurn() {
@@ -385,8 +384,7 @@ public class GameEngine implements Serializable {
             if (currentPlayer.isAlive()) {
                 activePlayers.add(currentPlayer);
                 currentPlayer = null;
-            }
-            else {
+            } else {
                 killPlayer(currentPlayer);
             }
             System.out.println(playerName + "'s turn has ended");
@@ -395,9 +393,9 @@ public class GameEngine implements Serializable {
         return numberOfPlayersAlive;
     }
 
-
     /**
      * moves the astronaut forward by one space
+     * 
      * @param traveller astronaut to move
      * @return space card drawn
      */
@@ -410,16 +408,14 @@ public class GameEngine implements Serializable {
         traveller.breathe();
         Card drawnSpaceCard = spaceDeck.draw();
 
-        boolean drawnSpaceCardIsGravitationalAnomaly = 
-            drawnSpaceCard.toString().equalsIgnoreCase("GRAVITATIONAL ANOMALY");
-            
+        boolean drawnSpaceCardIsGravitationalAnomaly = drawnSpaceCard.toString()
+                .equalsIgnoreCase("GRAVITATIONAL ANOMALY");
+
         if (drawnSpaceCardIsGravitationalAnomaly) {
             spaceDiscard.add(drawnSpaceCard);
-        }
-        else {
+        } else {
             traveller.addToTrack(drawnSpaceCard);
         }
         return drawnSpaceCard;
     }
 }
-

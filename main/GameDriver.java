@@ -4,9 +4,9 @@ import selfish.Astronaut;
 import selfish.GameEngine;
 import selfish.GameException;
 
-
 /**
  * Class GameDriver
+ * 
  * @author Minjun Kim
  * @version 1.0
  */
@@ -14,21 +14,22 @@ public class GameDriver {
 
     /**
      * A helper function to centre text in a longer String.
+     * 
      * @param width The length of the return String.
-     * @param s The text to centre.
+     * @param s     The text to centre.
      * @return A longer string with the specified text centred.
      */
-    public static String centreString (int width, String s) {
-        return String.format("%-" + width  + "s", String.format("%" + (s.length() + (width - s.length()) / 2) + "s", s));
+    public static String centreString(int width, String s) {
+        return String.format("%-" + width + "s", String.format("%" + (s.length() + (width - s.length()) / 2) + "s", s));
     }
-
 
     /**
      * an empty constructor
      */
-    public GameDriver() {}
+    public GameDriver() {
+    }
 
-    public static void main(String[] args) throws GameException, IOException, ClassNotFoundException  {
+    public static void main(String[] args) throws GameException, IOException, ClassNotFoundException {
 
         Scanner scanner = new Scanner(System.in);
 
@@ -41,28 +42,28 @@ public class GameDriver {
 
         if (scanner.nextLine().equalsIgnoreCase("y")) {
             GameEngine.loadState("gameDeckSave.ser");
-        } 
-        else {
+        } else {
             GameEngine gameEngine = new selfish.GameEngine(16412, actionCardsPath, spaceCardsPath);
 
             // This loop generates from 2 to 5 players.
             int numberOfPlayers;
-            for (int i=0; i<5; i++) {
+            for (int i = 0; i < 5; i++) {
                 numberOfPlayers = gameEngine.getAllPlayers().size();
                 if (numberOfPlayers >= 2) {
                     System.out.print("Add another player? [Y]es or [N]o: ");
-                    if (!(scanner.nextLine().equalsIgnoreCase("y"))) {break;}
-                    else {;}
+                    if (!(scanner.nextLine().equalsIgnoreCase("y"))) {
+                        break;
+                    }
                 }
                 System.out.print("Enter player name: ");
-                String name = scanner.nextLine(); 
+                String name = scanner.nextLine();
                 gameEngine.addPlayer(name);
                 numberOfPlayers = gameEngine.getAllPlayers().size();
                 System.out.println(numberOfPlayers + " player(s) added.");
             }
 
-            String gameOpening = "After a dazzling (but doomed) space mission, the astronauts are floating in space and " +
-                                 "their Oxygen supplies are running low.\nOnly the first back to the ship will survive!";
+            String gameOpening = "After a dazzling (but doomed) space mission, the astronauts are floating in space and "
+                               + "their Oxygen supplies are running low.\nOnly the first back to the ship will survive!";
 
             System.out.println(gameOpening);
             System.out.println("Their names are:");
@@ -70,7 +71,7 @@ public class GameDriver {
                 String playerName = player.toString();
                 System.out.println(playerName);
             }
-            
+
             numberOfPlayers = gameEngine.getAllPlayers().size();
             System.out.println("Total of " + numberOfPlayers + " players added.");
 
@@ -83,10 +84,4 @@ public class GameDriver {
         }
         scanner.close();
     }
-}  
-   
-
-        
-
-
-
+}
