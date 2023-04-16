@@ -69,14 +69,11 @@ public class GameDeck extends Deck {
     public Oxygen drawOxygen(int value) {
         Oxygen sampleOxygen = new Oxygen(value);
         for (Card element : this.getCards()) {
-            if (element instanceof Oxygen) {
-                if (sampleOxygen.compareTo(element) == 0) {
-                    this.remove(element);
-                    return ((Oxygen) element);
-                }
-                else {;}
-            }
-            else {;}
+            boolean notOxygen = !(element instanceof Oxygen);
+            boolean wrongOxygen = sampleOxygen.compareTo(element) != 0;
+            if (notOxygen || wrongOxygen) {continue;}
+            this.remove(element);
+            return ((Oxygen) element);
         }
         throw new IllegalStateException();
     }

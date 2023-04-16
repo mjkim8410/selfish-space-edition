@@ -62,31 +62,28 @@ public class Astronaut implements Serializable {
         int numberOfOxygenOneFound = 0;
         Oxygen sampleOxygenOne = new Oxygen(1);
         for (Oxygen element : oxygens) {
-            if (element instanceof Oxygen) {
-                if (element.compareTo(sampleOxygenOne) == 0) {
-                    numberOfOxygenOneFound++;
-                }
+            boolean isOxygenOne = element.compareTo(sampleOxygenOne) == 0;
+            if (element instanceof Oxygen && isOxygenOne) {
+                numberOfOxygenOneFound++;
             }
         }
 
         if (numberOfOxygenOneFound == 0) {
             for (Oxygen element : oxygens) {
-                if (element.getValue() == 2) {
-                    Oxygen[] oxygenOnePair = game.splitOxygen(element);
-                    oxygens.remove(element);
-                    addToHand(oxygenOnePair[0]);
-                    addToHand(oxygenOnePair[1]);
-                    break;
-                }
+                boolean isNotOxygenTwo = element.getValue() != 2;
+                if (isNotOxygenTwo) {continue;}
+                Oxygen[] oxygenOnePair = game.splitOxygen(element);
+                oxygens.remove(element);
+                addToHand(oxygenOnePair[0]);
+                addToHand(oxygenOnePair[1]);
             }
         }
 
         for (Oxygen element : oxygens) {
-            if (element.getValue() == 1) {
-                oxygens.remove(element);
-                (game.getGameDiscard()).add(element);
-                break;
-            }
+            boolean isNotOxygenOne = element.getValue() != 1;
+            if (isNotOxygenOne) {continue;}
+            oxygens.remove(element);
+            (game.getGameDiscard()).add(element);
         }
 
         int totalOxygenLeft = 0;
@@ -152,12 +149,11 @@ public class Astronaut implements Serializable {
         letters.add("[H] ");
 
         if (enumerated) {
-            int i = 0;
+            int index = 0;
             for (String element : actions) {
-                if (hasCard(element) != 0) {
-                    actionCardsListed = actionCardsListed + letters.get(i) + element + ", ";
-                    i++;
-                }
+                if (hasCard(element) == 0) {continue;}
+                actionCardsListed = actionCardsListed + letters.get(index) + element + ", ";
+                index++;
             }
         }
         else {
@@ -242,17 +238,16 @@ public class Astronaut implements Serializable {
         }
         boolean cardNotFound = true;
         for (Card element : getHand()) {
-            if (element == card) {
-                cardNotFound = false;
-                if (card instanceof Oxygen) {
-                    oxygens.remove(card);
-                    if (oxygenRemaining() == 0) {
-                        game.killPlayer(this);
-                        }
-                    }
-                else {
-                    actions.remove(card);
+            if (element != card) {continue;}
+            cardNotFound = false;
+            if (card instanceof Oxygen) {
+                oxygens.remove(card);
+                if (oxygenRemaining() == 0) {
+                    game.killPlayer(this);
                 }
+            }
+            else {
+                actions.remove(card);
             }
         }
         if (cardNotFound) {throw new IllegalArgumentException();}
@@ -270,32 +265,36 @@ public class Astronaut implements Serializable {
         }
         if (card.equals(GameDeck.OXYGEN_1)) {
             for (Oxygen element : oxygens) {
-                if (element.getValue() == 1) {
-                    oxygens.remove(element);
-                    if (oxygenRemaining() == 0) {
-                        game.killPlayer(this);
-                    }
-                    return (Card) element;
+                if (element.getValue() != 1) {
+                    continue;
                 }
+                oxygens.remove(element);
+                if (oxygenRemaining() == 0) {
+                    game.killPlayer(this);
+                }
+                return (Card) element;
             }
         }
         else if (card.equals(GameDeck.OXYGEN_2)) {
             for (Oxygen element : oxygens) {
-                if (element.getValue() == 2) {
-                    oxygens.remove(element);
-                    if (oxygenRemaining() == 0) {
-                        game.killPlayer(this);
-                    }
-                    return (Card) element;
+                if (element.getValue() != 2) {
+                    continue;
                 }
+                oxygens.remove(element);
+                if (oxygenRemaining() == 0) {
+                    game.killPlayer(this);
+                }
+                return (Card) element;
             }
         }
         else {
             for (Card element : actions) {
-                if (element.toString().equals(card)) {
-                    actions.remove(element);
-                    return (Card) element;
+                boolean notFound = !(element.toString().equals(card));
+                if (notFound) {
+                    continue;
                 }
+                actions.remove(element);
+                return (Card) element;
             }
         }
         throw new IllegalArgumentException();
@@ -310,7 +309,8 @@ public class Astronaut implements Serializable {
     public int hasCard(String card) {
         int numberOfCardsInHand = 0;
         for (Card element : getHand()) {
-            if (element.toString().equals(card)) {
+            boolean found = element.toString().equals(card);
+            if (found) {
                 numberOfCardsInHand++;
             }
         }
@@ -401,25 +401,23 @@ public class Astronaut implements Serializable {
      */
     public Oxygen siphon() {
         for (Oxygen element : oxygens ) {
-            boolean elementIsOxygenOne = element.getValue() == 1;
-            if (elementIsOxygenOne) {
-                oxygens.remove(element);
-                if (oxygenRemaining() == 0) {
-                    game.killPlayer(this);
-                }
-                return element;
+            boolean elementIsNotOxygenOne = element.getValue() == 1;
+            if (elementIsNotOxygenOne) {continue;}
+            oxygens.remove(element);
+            if (oxygenRemaining() == 0) {
+                game.killPlayer(this);
             }
+            return element;
         }
         for (Oxygen element : oxygens ) {
-            boolean elementIsOxygenTwo = element.getValue() == 2;
-            if (elementIsOxygenTwo) {
-                Card[] pairOfOxygenOne = game.splitOxygen(element);
-                oxygens.remove(element);
-                addToHand(pairOfOxygenOne[1]);
-                Card oxygenOne = pairOfOxygenOne[0];
-                return (Oxygen)oxygenOne;
+            boolean elementIsNotOxygenTwo = element.getValue() == 2;
+            if (elementIsNotOxygenTwo) {continue;}
+            Card[] pairOfOxygenOne = game.splitOxygen(element);
+            oxygens.remove(element);
+            addToHand(pairOfOxygenOne[1]);
+            Card oxygenOne = pairOfOxygenOne[0];
+            return (Oxygen)oxygenOne;
             }
-        }
         return null;
     }
 

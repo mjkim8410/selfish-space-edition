@@ -43,10 +43,10 @@ public abstract class Deck implements Serializable{
             while (Scan.hasNextLine()) {
                 String cardLine = Scan.nextLine();
                 String lineSplit[] = cardLine.split("; ");
-                if (lineSplit[0].equals("NAME") == false) {
-                    for (int i = 0; i < stringToCards(cardLine).length; i++) {
-                        ((ArrayList<Card>)cardList).add(stringToCards(cardLine)[i]);
-                    } 
+                if (lineSplit[0].equals("NAME") == true) {continue;}
+            
+                for (int i = 0; i < stringToCards(cardLine).length; i++) {
+                    ((ArrayList<Card>)cardList).add(stringToCards(cardLine)[i]);
                 }
             }
             Scan.close();
@@ -116,10 +116,10 @@ public abstract class Deck implements Serializable{
      */
     public void remove(Card card) {
         for (Card element : cards) {
-            if (element.compareTo(card) == 0) {
-                cards.remove(element);
-                break;
-            }
+            boolean match = element.compareTo(card) == 0;
+            if (!match) {continue;}
+            cards.remove(element);
+            break;
         }
     }
 

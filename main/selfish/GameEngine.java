@@ -63,12 +63,7 @@ public class GameEngine implements Serializable {
      * @return number of players added
      */
     public int addPlayer(String player) {
-        if (hasStarted) {
-            System.out.println("Game already started yet");
-            throw new IllegalStateException();
-        }
-        if (getFullPlayerCount() == 5) {
-            System.out.println("already five players");
+        if (hasStarted && getFullPlayerCount() == 5) {
             throw new IllegalStateException();
         }
         ((LinkedList<Astronaut>)activePlayers).add(new Astronaut(player, this));
@@ -82,14 +77,18 @@ public class GameEngine implements Serializable {
      */
     public boolean gameOver() {
         for (Astronaut astronaut : getAllPlayers()) {
-            if (astronaut.hasWon() && astronaut.isAlive()) {return true;}
+            if (astronaut.hasWon() && astronaut.isAlive()) {
+                return true;
+            }
         }
         int numberOfPlayersAlive = 0;
         for (Astronaut astronaut : getAllPlayers()) {
             if (!astronaut.isAlive()) {
                 numberOfPlayersAlive++;
             }
-        if (getFullPlayerCount() == numberOfPlayersAlive) {return true;}
+        if (getFullPlayerCount() == numberOfPlayersAlive) {
+            return true;
+        }
         }
         return false;
     }
@@ -303,8 +302,8 @@ public class GameEngine implements Serializable {
         else {
             for (Card card : gameDiscard.getCards()) {
                 boolean cardIsOxygenOne = ((Oxygen)card).getValue() == 1;
-                if (card instanceof Oxygen) {
-                    if (cardIsOxygenOne) {numberOfOxygenOne++;}
+                if (card instanceof Oxygen && cardIsOxygenOne) {
+                    numberOfOxygenOne++;
                 }
             }
             if (numberOfOxygenOne > 1) {
@@ -333,7 +332,6 @@ public class GameEngine implements Serializable {
                 element.addToHand(this.gameDeck.drawOxygen(1));
             }
         }
-
         for (int i=0; i<numberOfActionCardsToDeal; i++) {
             for (Astronaut element : activePlayers) {
                 element.addToHand(this.gameDeck.draw());
